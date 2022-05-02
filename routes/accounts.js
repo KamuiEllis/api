@@ -6,6 +6,13 @@ const crypto = require('crypto');
 const saltRounds = 10;
 
 
+function ConvertStringToHex(str) {
+    var arr = [];
+    for (var i = 0; i < str.length; i++) {
+      arr[i] = ("00" + str.charCodeAt(i).toString(16)).slice(-4);
+    }
+    return "\\u" + arr.join("\\u");
+}
 
 route.get('/', async (req,res) => {
     await accountsShema.find({}, (err, result) => {
@@ -19,19 +26,13 @@ route.get('/', async (req,res) => {
 
 route.post('/', async (req,res) => {
 
+    req.body.password = ConvertStringToHex(req.body.password);
 
-    await bcrypt.genSalt(saltRounds, async function(err, salt) {
-        await bcrypt.hash(req.body.password, salt, async function(err,hash) {
-            req.body.password = hash;
-
-            await accountsShema.create(req.body, (err, result) => {
-                if(err) {
-                    res.send({msg:err});
-                }
-                res.send(result)
-            })
-
-        })
+    await accountsShema.create(req.body, (err, result) => {
+        if(err) {
+            res.send({msg:err});
+        }
+        res.send(result)
     })
 
    
@@ -49,6 +50,10 @@ route.get('/:id', async(req,res) => {
 })
 
 route.put('/:id', async(req,res) => {
+
+    req.body.password = ConvertStringToHex(req.body.password);
+
+
     await accountsShema.findByIdAndUpdate(req.params.id, req.body).then((err,result) => {
         res.send(result)
     }).catch(e => {

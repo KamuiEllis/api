@@ -6,7 +6,8 @@ const botsSchema = new schema({
     link:String, 
     amount: Number,
     bought: String,
-    status: String
+    status: String,
+    account: String
 })
 
 module.exports = mongoose.model('bots', botsSchema)

@@ -29,7 +29,7 @@ route.post('/', async (req,res) => {
 })
 
 route.get('/:id', async(req,res) => {
-    await botShema.find({_id:req.params.id}, (err, result) => {
+    await botShema.findOne({_id:req.params.id}, (err, result) => {
 
         if(err) {
             res.send({msg:err})
@@ -48,7 +48,6 @@ route.put('/:id', async(req,res) => {
 })
 
 
-
 route.delete('/:id', async(req,res) => {
     await botShema.findOneAndDelete({_id:req.params.id}, (err, result) => {
 
@@ -59,8 +58,6 @@ route.delete('/:id', async(req,res) => {
         res.send(result)
     })
 })
-
-
 
 
 module.exports = route
