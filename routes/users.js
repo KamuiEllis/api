@@ -56,22 +56,26 @@ route.post('/register', async (req,res) => {
 })
 
 route.post('/login', async (req,res) => {
-    let user = req.body;
+    let userInfo = req.body;
 
-    await userShema.findOne({}, async (data) => {
-        await bcrypt.compare(user.password, data.password, async function(valid) {
-            if(valid == false) {
+     let user = await userShema.findOne({email: userInfo.email})
+
+     if(user) {
+        await bcrypt.compare(userInfo.password, user.password, async function(err, result) {
+            if(result == false) {
                 res.send('password is incorrect')
             } else {
                 let token = generateAuthToken()
-                // const authTokens = {};
-                // authTokens[token] = 
+    
+                authTokens[token] = user
                 res.cookie('AuthToken', token)
+                res.send(user)
             }
         })
-    }).catch(e => {
-        res.send(e)
-    })
+     } else {
+         res.send({msg:'Invalid login'})
+     }
+    
 })
 
 route.delete('/:id', async(req,res) => {
